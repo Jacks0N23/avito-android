@@ -7,11 +7,15 @@ import com.android.build.gradle.AppPlugin
 import com.avito.android.agp.getVersionCode
 import com.avito.android.artifactory_backup.ArtifactoryBackupTask
 import com.avito.android.contract_upload.UploadCdBuildResultTask
-import com.avito.android.model.CdBuildConfig
-import com.avito.android.provider.CdBuildConfigTransformer
-import com.avito.android.provider.StrictCdBuildConfigValidator
+import com.avito.android.model.input.CdBuildConfig
+import com.avito.android.model.input.CdBuildConfigParserFactory
+import com.avito.android.model.input.CdBuildConfigV3
+import com.avito.android.model.input.v3.DeploymentDeserializer
 import com.avito.android.stats.statsdConfig
 import com.avito.capitalize
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -25,14 +29,19 @@ import org.gradle.kotlin.dsl.withType
 
 public class NupokatiPlugin : Plugin<Project> {
 
+    /**
+     * to be accessible from client-side build scripts
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
     public lateinit var cdBuildConfig: Provider<CdBuildConfig>
 
     override fun apply(project: Project) {
 
         val extension = project.extensions.create<NupokatiExtension>("nupokati")
 
-        cdBuildConfig = extension.cdBuildConfigFile
-            .map(CdBuildConfigTransformer(validator = StrictCdBuildConfigValidator()))
+        val contractGson: Gson = createGson()
+
+        cdBuildConfig = extension.cdBuildConfigFile.map(CdBuildConfigParserFactory(contractGson))
 
         project.plugins.withType<AppPlugin> {
             val androidComponents = project.extensions.getByType<ApplicationAndroidComponentsExtension>()
@@ -63,11 +72,9 @@ public class NupokatiPlugin : Plugin<Project> {
 
                         this.artifactoryUser.set(extension.artifactory.login)
                         this.artifactoryPassword.set(extension.artifactory.password)
-                        this.artifactoryUploadPath.set(
-                            cdBuildConfig.map {
-                                it.outputDescriptor.path.substringBeforeLast('/')
-                            }
-                        )
+                        this.artifactoryUploadPath.set(cdBuildConfig.map {
+                            it.outputDescriptor.path.substringBeforeLast('/')
+                        })
                         this.buildVariant.set(variant.name)
                         this.files.set(project.files(bundle))
                         this.statsDConfig.set(project.statsdConfig)
@@ -98,4 +105,12 @@ public class NupokatiPlugin : Plugin<Project> {
             }
         }
     }
+}
+
+internal fun createGson(): Gson {
+    return GsonBuilder()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .disableHtmlEscaping()
+        .registerTypeAdapter(CdBuildConfigV3.Deployment::class.java, DeploymentDeserializer)
+        .create()
 }

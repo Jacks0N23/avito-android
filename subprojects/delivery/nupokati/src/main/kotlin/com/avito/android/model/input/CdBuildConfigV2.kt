@@ -1,17 +1,12 @@
-package com.avito.android.model
+package com.avito.android.model.input
 
-public data class CdBuildConfig(
-    val schemaVersion: Long,
+public data class CdBuildConfigV2(
+    override val schemaVersion: Long,
     val project: NupokatiProject,
-    val outputDescriptor: OutputDescriptor,
-    val releaseVersion: String,
+    override val outputDescriptor: OutputDescriptor,
+    override val releaseVersion: String,
     val deployments: List<Deployment>
-) {
-
-    public data class OutputDescriptor(
-        val path: String,
-        val skipUpload: Boolean
-    )
+) : CdBuildConfig {
 
     public sealed class Deployment {
 

@@ -3,10 +3,10 @@ package com.avito.android.contract_upload
 import com.avito.android.artifactory_backup.CdBuildResultArtifactsAdapter
 import com.avito.android.http.ArtifactoryClient
 import com.avito.android.http.createArtifactoryHttpClient
-import com.avito.android.model.CdBuildConfig
+import com.avito.android.model.input.CdBuildConfig
+import com.avito.android.model.input.v2.uploadCdGson
 import com.avito.android.model.CdBuildResult
 import com.avito.android.model.toCdCoordinates
-import com.avito.android.provider.uploadCdGson
 import com.avito.android.stats.StatsDConfig
 import com.avito.git.gitState
 import com.avito.reportviewer.ReportViewerLinksGeneratorImpl

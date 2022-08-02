@@ -1,4 +1,4 @@
-package com.avito.android.model
+package com.avito.android.model.input
 
 import com.google.gson.annotations.SerializedName
 

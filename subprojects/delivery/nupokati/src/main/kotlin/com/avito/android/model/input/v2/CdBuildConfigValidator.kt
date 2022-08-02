@@ -1,28 +1,28 @@
-package com.avito.android.provider
+package com.avito.android.model.input.v2
 
-import com.avito.android.model.CdBuildConfig
+import com.avito.android.model.input.CdBuildConfigV2
 
 internal interface CdBuildConfigValidator {
 
-    fun validate(config: CdBuildConfig)
+    fun validate(config: CdBuildConfigV2)
 }
 
 internal class StrictCdBuildConfigValidator : CdBuildConfigValidator {
 
-    override fun validate(config: CdBuildConfig) {
+    override fun validate(config: CdBuildConfigV2) {
         checkUnsupportedDeployments(config)
         checkQappsDeployments(config)
     }
 
-    private fun checkUnsupportedDeployments(config: CdBuildConfig) {
-        val unknownDeployments = config.deployments.filterIsInstance<CdBuildConfig.Deployment.Unknown>()
+    private fun checkUnsupportedDeployments(config: CdBuildConfigV2) {
+        val unknownDeployments = config.deployments.filterIsInstance<CdBuildConfigV2.Deployment.Unknown>()
         require(unknownDeployments.isEmpty()) {
             "Unknown deployment types: $unknownDeployments"
         }
     }
 
-    private fun checkQappsDeployments(config: CdBuildConfig) {
-        val deployments = config.deployments.filterIsInstance<CdBuildConfig.Deployment.Qapps>()
+    private fun checkQappsDeployments(config: CdBuildConfigV2) {
+        val deployments = config.deployments.filterIsInstance<CdBuildConfigV2.Deployment.Qapps>()
         require(deployments.size <= 1) {
             "Must be one Qapps deployment, but was: $deployments"
         }

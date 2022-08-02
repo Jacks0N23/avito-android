@@ -1,8 +1,8 @@
 package com.avito.android.contract_upload
 
 import com.avito.android.http.ArtifactoryClient
+import com.avito.android.model.input.CdBuildConfig
 import com.avito.android.model.BuildOutput
-import com.avito.android.model.CdBuildConfig
 import com.avito.android.model.CdBuildResult
 import com.avito.git.GitState
 import com.google.gson.Gson

@@ -1,8 +1,9 @@
-package com.avito.android.provider
+package com.avito.android.model.input.v2
 
-import com.avito.android.model.AndroidArtifactType
-import com.avito.android.model.CdBuildConfig
-import com.avito.android.model.CdBuildConfig.Deployment
+import com.avito.android.createGson
+import com.avito.android.model.input.CdBuildConfigV2
+import com.avito.android.model.input.CdBuildConfigV2.Deployment
+import com.avito.android.model.input.AndroidArtifactType
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Path
 
-internal class CdBuildConfigTransformerTest {
+internal class CdBuildConfigV2ParserTest {
 
     private lateinit var testProjectDir: File
 
@@ -72,11 +73,11 @@ internal class CdBuildConfigTransformerTest {
         }
     }
 
-    private fun parseConfig(config: String): CdBuildConfig {
+    private fun parseConfig(config: String): CdBuildConfigV2 {
         val inputFile = File(testProjectDir, "config.json")
         inputFile.writeText(config)
 
-        return CdBuildConfigTransformer(StubCdBuildConfigValidator)
+        return CdBuildConfigParser(createGson(), StubCdBuildConfigValidator)
             .transform { inputFile }
     }
 }
